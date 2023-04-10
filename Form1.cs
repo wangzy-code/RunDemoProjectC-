@@ -9,6 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace RunDemoProject
 {
@@ -17,6 +20,7 @@ namespace RunDemoProject
         public Form1()
         {
             InitializeComponent();
+            pictureBox1.Image = mybmp;
         }
 
         private void btnFileSelect1_Click(object sender, EventArgs e)
@@ -35,27 +39,58 @@ namespace RunDemoProject
 
         private void btnFileSelect2_Click(object sender, EventArgs e)
         {
-            OpenFileDialog pOpenFileDialog = new OpenFileDialog();
-            pOpenFileDialog.Title = "打开文件";
-            pOpenFileDialog.Filter = "txt文件|*.txt";
-            pOpenFileDialog.CheckFileExists = true;
-
-            if (pOpenFileDialog.ShowDialog() == DialogResult.OK)
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            //folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer; // 设置默认的根目录
+            string defaultPath;
+            if (tbxFileSelect2.Text!="")
             {
-                tbxFileSelect2.Text = pOpenFileDialog.FileName;
+                defaultPath = tbxFileSelect2.Text;
+            }
+            else
+            {
+                defaultPath = @"\\ZNJC-EXP-HOST\data-shared\ML\wangzy\images_data";
+            }
+            folderBrowserDialog.Description = "请选择一个图像文件夹";
+            if (!string.IsNullOrEmpty(defaultPath))
+            {
+                Type type = folderBrowserDialog.GetType();
+                FieldInfo fieldInfo = type.GetField("selectedPath", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(folderBrowserDialog, defaultPath); // 设置默认路径
+            }
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 用户点击了确定按钮，获取选择的路径
+                tbxFileSelect2.Text = folderBrowserDialog.SelectedPath;
+                // 处理选择的路径
             }
         }
 
         private void btnFileSelect3_Click(object sender, EventArgs e)
         {
-            OpenFileDialog pOpenFileDialog = new OpenFileDialog();
-            pOpenFileDialog.Title = "打开文件";
-            pOpenFileDialog.Filter = "name文件|*.name";
-            pOpenFileDialog.CheckFileExists = true;
-
-            if (pOpenFileDialog.ShowDialog() == DialogResult.OK)
+            FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
+            //folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer; // 设置默认的根目录
+            string defaultPath;
+            if (tbxFileSelect3.Text != "")
             {
-                tbxFileSelect3.Text = pOpenFileDialog.FileName;
+                defaultPath = tbxFileSelect3.Text;
+            }
+            else
+            {
+                defaultPath = @"\\ZNJC-EXP-HOST\data-shared\ML\wangzy\images_data";
+            }
+            folderBrowserDialog.Description = "请选择一个标注文件夹";
+            if (!string.IsNullOrEmpty(defaultPath))
+            {
+                Type type = folderBrowserDialog.GetType();
+                FieldInfo fieldInfo = type.GetField("selectedPath", BindingFlags.NonPublic | BindingFlags.Instance);
+                fieldInfo.SetValue(folderBrowserDialog, defaultPath); // 设置默认路径
+            }
+
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+            {
+                // 用户点击了确定按钮，获取选择的路径
+                tbxFileSelect3.Text = folderBrowserDialog.SelectedPath;
+                // 处理选择的路径
             }
         }
 
@@ -63,16 +98,17 @@ namespace RunDemoProject
         {
             //第一种方法
             string[] strArr = new string[5];//参数列表
-            string sArguments = @"Python\new.py";//这里是python的文件名字
-            strArr[0] = "test";
-            strArr[1] = "wff";
-            //strArr[4] = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + "python\\";//整个路径是
-            //strArr[2] = "2";//可以传输字符串
-            //strArr[3] = "new";
+            string sArguments = @"Python\txt2xml_para.py";//这里是python的文件名字
+            strArr[0] = tbxFileSelect2.Text; //图像路径
+            strArr[1] = tbxFileSelect3.Text; //annotations路径
+            string hdictPath = tbxFileSelect1.Text;
+            strArr[2] = hdictPath.Replace(".hdict", ".names");
+            strArr[3] = hdictPath.Replace(".hdict", ".txt");
+          
             RunPythonScript(sArguments, strArr);
         }
 
-        public static void RunPythonScript(string sArgName, params string[] tep)
+        public void RunPythonScript(string sArgName, params string[] tep)
         {
             Process p = new Process();
             string path = System.AppDomain.CurrentDomain.SetupInformation.ApplicationBase + sArgName;// 获得python文件的绝对路径（将文件放在c#的debug文件夹中可以这样操作）
@@ -80,7 +116,7 @@ namespace RunDemoProject
             //string path_python = path + "\\matlab";
             p.StartInfo.FileName = @"C:\ProgramsUsers\Anaconda3\python.exe";//启动外部程序的类型，这里交代了Python的配置环境路径
             string sArguments = path;
-            sArguments = sArguments + " " + tep[0] + " " + tep[1];//实现参数的拼接+" " + tep[2]+ " " + tep[3]
+            sArguments = sArguments + " " + tep[0] + " " + tep[1]+" " + tep[2] + " " + tep[3];//实现参数的拼接+" " + tep[2]+ " " + tep[3]
             p.StartInfo.Arguments = sArguments;
             p.StartInfo.UseShellExecute = false;////是否使用操作系统shell启动，直接从可执行文件创建进程
             p.StartInfo.RedirectStandardOutput = true;///由调用程序获取输出信息
@@ -88,7 +124,9 @@ namespace RunDemoProject
             p.StartInfo.RedirectStandardError = true;//重定向标准错误输出
             p.StartInfo.CreateNoWindow = false;//不显示程序窗口
             p.Start();     //实际上是新创建了一个进程
+            ShowLabel1.Text = "convert .";
             p.BeginOutputReadLine();
+            ShowLabel1.Text = "convert end.";
             p.OutputDataReceived += new DataReceivedEventHandler(p_OutputDataReceived);//接受Python文件print的内容
             Console.ReadLine();
             p.WaitForExit();
@@ -115,7 +153,6 @@ namespace RunDemoProject
         {
             //HOperatorSet.ReadImage(out _himage, @"C:\Users\Administrator\Desktop\1\004_0.tiff");
             //hWindow_Final1.HobjectToHimage(_himage);
-
             HTuple hv_HdictDir = new HTuple(), hv_Substrings = new HTuple();
             HTuple hv_Length = new HTuple(), hv_SubstringsSec = new HTuple();
             HTuple hv_Position = new HTuple(), hv_SaveDir = new HTuple();
@@ -258,8 +295,9 @@ namespace RunDemoProject
                 }
                 HOperatorSet.FwriteString(hv_TxtFileHandle, hv_TxtString);
 
-
+                ShowLabel.Text = "convert......";
             }
+            ShowLabel.Text = "convert end .";
             hv_HdictDir.Dispose();
             hv_HdictDir.Dispose();
             hv_Substrings.Dispose();
@@ -307,12 +345,6 @@ namespace RunDemoProject
 
         }
 
-
-        private void hWindow_Final1_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void lblFileSelect1_Click(object sender, EventArgs e)
         {
 
@@ -326,6 +358,161 @@ namespace RunDemoProject
         private void lblFileSelect1_Click_1(object sender, EventArgs e)
         {
 
+        }
+
+        private void tbpSelect_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        Point mouseDownPoint = new Point();
+        bool ismove = false;
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                // 记录鼠标左键按下时的位置
+                mouseDownPoint.X = Cursor.Position.X;
+                mouseDownPoint.Y = Cursor.Position.Y;
+                ismove = true;
+
+                // 鼠标滚轮事件（缩放时）需要pictureBox1有焦点
+                pictureBox1.Focus();
+            }
+        }
+
+        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ismove = false;
+            }
+        }
+
+        int zoomStep = 2;
+        Bitmap mybmp = new Bitmap(@"..\\Debug\\1.png");
+
+        private void pictureBox1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            int x = e.Location.X;
+            int y = e.Location.Y;
+            int ow = pictureBox1.Width;
+            int oh = pictureBox1.Height;
+            int vx, vy;  //因缩放产生的位移矢量
+            if (e.Delta > 0) //放大
+            {
+                if (pictureBox1.Width * pictureBox1.Height < 100000000)
+                {
+                    //第①步
+                    pictureBox1.Width *= zoomStep;
+                    pictureBox1.Height *= zoomStep;
+                    //第②步
+                    PropertyInfo pinfo = pictureBox1.GetType().GetProperty("ImageRectangle", BindingFlags.Instance |
+                BindingFlags.NonPublic);
+                    Rectangle rect = (Rectangle)pinfo.GetValue(pictureBox1, null);
+                    //第③步
+                    pictureBox1.Width = rect.Width;
+                    pictureBox1.Height = rect.Height;
+                }
+            }
+            if (e.Delta < 0) //缩小
+            {
+                //防止一直缩成负值
+                if (pictureBox1.Width < mybmp.Width / 10)
+                    return;
+
+                pictureBox1.Width /= zoomStep;
+                pictureBox1.Height /= zoomStep;
+                PropertyInfo pinfo = pictureBox1.GetType().GetProperty("ImageRectangle", BindingFlags.Instance |
+                BindingFlags.NonPublic);
+                Rectangle rect = (Rectangle)pinfo.GetValue(pictureBox1, null);
+                pictureBox1.Width = rect.Width;
+                pictureBox1.Height = rect.Height;
+            }
+            //第④步，求因缩放产生的位移，进行补偿，实现锚点缩放的效果
+            vx = (int)((double)x * (ow - pictureBox1.Width) / ow);
+            vy = (int)((double)y * (oh - pictureBox1.Height) / oh);
+            pictureBox1.Location = new Point(pictureBox1.Location.X + vx, pictureBox1.Location.Y + vy);
+        }
+
+
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            // 鼠标在pictureBox1上时才有焦点，此时可以缩放
+            pictureBox1.Focus();
+            if (ismove)
+            {
+                // 新的pictureBox1.Location(x,y)
+                int x, y;
+
+                // x方向，y方向移动大小
+                int moveX, moveY;
+
+                moveX = Cursor.Position.X - mouseDownPoint.X;
+                moveY = Cursor.Position.Y - mouseDownPoint.Y;
+                x = pictureBox1.Location.X + moveX;
+                y = pictureBox1.Location.Y + moveY;
+                pictureBox1.Location = new Point(x, y);
+                mouseDownPoint.X = Cursor.Position.X;
+                mouseDownPoint.Y = Cursor.Position.Y;
+            }
+        }
+
+        private void panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                // 记录鼠标左键按下时的位置
+                mouseDownPoint.X = Cursor.Position.X;
+                mouseDownPoint.Y = Cursor.Position.Y;
+                ismove = true;
+            }
+        }
+
+        private void panel1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                ismove = false;
+            }
+        }
+
+        private void panel1_MouseMove(object sender, MouseEventArgs e)
+        {
+            // 鼠标不在pictureBox1上时焦点给别的控件，此时无法缩放
+            panel1.Focus();
+            if(ismove)
+            {
+                int x, y;
+                int moveX, moveY;
+                moveX = Cursor.Position.X - mouseDownPoint.X;
+                moveY = Cursor.Position.Y - mouseDownPoint.Y;
+                x = pictureBox1.Location.X + moveX;
+                y = pictureBox1.Location.Y + moveY;
+                pictureBox1.Location = new Point(x, y);
+                mouseDownPoint.X = Cursor.Position.X;
+                mouseDownPoint.Y = Cursor.Position.Y;
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            StreamReader sr = new StreamReader("..\\Debug\\FilePathConfig.xml");
+            
+            tbxFileSelect1.Text = sr.ReadLine();
+            tbxFileSelect2.Text = sr.ReadLine();
+            tbxFileSelect3.Text = sr.ReadLine();
+            sr.Close();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            StreamWriter sw = new StreamWriter("..\\Debug\\FilePathConfig.xml");
+            sw.WriteLine(tbxFileSelect1.Text);//按行写
+            sw.WriteLine(tbxFileSelect2.Text);
+            sw.WriteLine(tbxFileSelect3.Text);
+            sw.Close();//关闭
         }
     }
 }

@@ -37,10 +37,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\halcondotnet.dll</HintPath>
     </Reference>
-    <Reference Include="HWindow_Tool, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\HWindow_Tool.dll</HintPath>
-    </Reference>
     <Reference Include="IronPython, Version=3.4.0.0, Culture=neutral, PublicKeyToken=7f709c5b713576e1, processorArchitecture=MSIL">
       <HintPath>packages\IronPython.3.4.0\lib\net462\IronPython.dll</HintPath>
     </Reference>

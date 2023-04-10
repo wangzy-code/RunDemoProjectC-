@@ -42,13 +42,19 @@ namespace RunDemoProject
             this.btnHalcon = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbpSelect = new System.Windows.Forms.TabPage();
+            this.ShowLabel = new System.Windows.Forms.Label();
+            this.megShow = new System.Windows.Forms.Label();
             this.tbpShow = new System.Windows.Forms.TabPage();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.ShowLabel1 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tbpSelect.SuspendLayout();
             this.tbpShow.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // lblFileSelect1
@@ -165,6 +171,9 @@ namespace RunDemoProject
             // 
             // tbpSelect
             // 
+            this.tbpSelect.Controls.Add(this.ShowLabel1);
+            this.tbpSelect.Controls.Add(this.ShowLabel);
+            this.tbpSelect.Controls.Add(this.megShow);
             this.tbpSelect.Controls.Add(this.tbxFileSelect3);
             this.tbpSelect.Controls.Add(this.btnHalcon);
             this.tbpSelect.Controls.Add(this.lblFileSelect1);
@@ -183,6 +192,26 @@ namespace RunDemoProject
             this.tbpSelect.TabIndex = 0;
             this.tbpSelect.Text = "页面1";
             this.tbpSelect.UseVisualStyleBackColor = true;
+            this.tbpSelect.Click += new System.EventHandler(this.tbpSelect_Click);
+            // 
+            // ShowLabel
+            // 
+            this.ShowLabel.AutoSize = true;
+            this.ShowLabel.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.ShowLabel.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ShowLabel.Location = new System.Drawing.Point(243, 82);
+            this.ShowLabel.Name = "ShowLabel";
+            this.ShowLabel.Size = new System.Drawing.Size(63, 14);
+            this.ShowLabel.TabIndex = 14;
+            this.ShowLabel.Text = "MesgShow";
+            // 
+            // megShow
+            // 
+            this.megShow.AutoSize = true;
+            this.megShow.Location = new System.Drawing.Point(296, 82);
+            this.megShow.Name = "megShow";
+            this.megShow.Size = new System.Drawing.Size(0, 12);
+            this.megShow.TabIndex = 11;
             // 
             // tbpShow
             // 
@@ -199,10 +228,28 @@ namespace RunDemoProject
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.panel1.BackColor = System.Drawing.Color.Gray;
+            this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(379, 397);
+            this.panel1.Size = new System.Drawing.Size(774, 682);
             this.panel1.TabIndex = 0;
+            this.panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseDown);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseUp);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(774, 682);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.pictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseUp);
+            this.pictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseWheel);
             // 
             // tabPage1
             // 
@@ -224,6 +271,17 @@ namespace RunDemoProject
             this.tabPage2.Text = "页面4";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // ShowLabel1
+            // 
+            this.ShowLabel1.AutoSize = true;
+            this.ShowLabel1.BackColor = System.Drawing.Color.AntiqueWhite;
+            this.ShowLabel1.Font = new System.Drawing.Font("宋体", 10.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ShowLabel1.Location = new System.Drawing.Point(243, 226);
+            this.ShowLabel1.Name = "ShowLabel1";
+            this.ShowLabel1.Size = new System.Drawing.Size(63, 14);
+            this.ShowLabel1.TabIndex = 15;
+            this.ShowLabel1.Text = "MesgShow";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -233,10 +291,14 @@ namespace RunDemoProject
             this.Name = "Form1";
             this.ShowIcon = false;
             this.Text = "Demo";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tbpSelect.ResumeLayout(false);
             this.tbpSelect.PerformLayout();
             this.tbpShow.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -260,6 +322,10 @@ namespace RunDemoProject
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label megShow;
+        private System.Windows.Forms.Label ShowLabel;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label ShowLabel1;
     }
 }
 
